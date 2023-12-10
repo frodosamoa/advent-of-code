@@ -2,11 +2,11 @@ const path = require("path");
 const fs = require("fs");
 const data = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8");
 const input = data.trim();
-
-const rows = input.split(/\n/).map((r) => r.split(" | "));
+const rows = input.split(/\n/);
 
 console.log(
   rows
+    .map((r) => r.split(" | "))
     .map(([_, output]) => output.split(" "))
     .reduce((acc, cur) => [...acc, ...cur], [])
     .reduce(
