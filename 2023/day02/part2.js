@@ -5,7 +5,6 @@ const input = data.trimEnd().split(/\n/);
 
 const result = input.reduce((acc, cur) => {
   const game = cur.split(":");
-  const gameId = game[0].split(" ")[1];
   const games = game[1].split(";").map((s) =>
     s
       .trim()
@@ -13,20 +12,33 @@ const result = input.reduce((acc, cur) => {
       .map((s) => s.split(" "))
   );
 
-  if (
-    games.some((game) =>
-      game.some(
-        ([score, color]) =>
-          (color === "red" && Number(score) > 12) ||
-          (color === "green" && Number(score) > 13) ||
-          (color === "blue" && Number(score) > 14)
-      )
-    )
-  ) {
-    return acc;
-  }
+  const min = games.reduce(
+    (gameColorValues, cur) => {
+      const minValues = cur.reduce((colorValues, game) => {
+        const [score, color] = game;
 
-  return acc + Number(gameId);
+        return {
+          ...colorValues,
+          [color]: acc[color]
+            ? Math.max(acc[color], Number(score))
+            : Number(score),
+        };
+      }, gameColorValues);
+
+      return {
+        red: Math.max(minValues.red, gameColorValues.red),
+        green: Math.max(minValues.green, gameColorValues.green),
+        blue: Math.max(minValues.blue, gameColorValues.blue),
+      };
+    },
+    {
+      red: 0,
+      green: 0,
+      blue: 0,
+    }
+  );
+
+  return acc + Object.values(min).reduce((acc, cur) => acc * cur, 1);
 }, 0);
 
 console.log(result);
